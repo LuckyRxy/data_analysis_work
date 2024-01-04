@@ -11,6 +11,7 @@ __year__ = "2023"
 import numpy as np
 from mayavi import mlab
 import matplotlib
+from sklearn.cluster import KMeans
 
 from public.BrowseGaborFiltBank import BrowseGaborFiltBank
 from public.GaborFilters import GaborFilterBank2D
@@ -285,3 +286,23 @@ plt.ylabel('Laplacian')
 plt.title('Pixel Distribution in the Space of Values given by (Intensity,Laplacian).')
 plt.legend()
 print("!!!!!")
+
+## 4.3 Kmeans Clustering
+# EX7: Run k-means with and without normalization of the feature space
+
+Lap = (Lap - Lap.min()) / (Lap.max() - Lap.min())
+X = np.array((im.flatten(), Lap.flatten()))
+kmeans = KMeans(n_clusters=2)
+kmeans = kmeans.fit(X.transpose())
+labels = kmeans.predict(X.transpose())
+
+plt.figure()
+plt.plot(im.flatten(), Lap.flatten(), '.')
+plt.plot(im[np.nonzero(imMask)], Lap[np.nonzero(imMask)], 'r.', label='Lesion Values')
+plt.xlabel('Intensity')
+plt.ylabel('Laplacian')
+plt.title('Pixel Distribution in the Space of Values given by (Intensity,Laplacian).')
+x = X[0, np.nonzero(labels == 1)]
+y = X[1, np.nonzero(labels == 1)]
+plt.plot(x.flatten(), y.flatten(), 'k.', label='k-means Clustering')
+plt.legend()

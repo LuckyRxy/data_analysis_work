@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-__author__ = "Guillermo Torres, Debora Gil and Pau Cano"
-__license__ = "GPLv3"
-__email__ = "gtorres,debora,pau@cvc.uab.cat"
-__year__ = "2023"
-"""
 import os
 import re
 import pandas as pd
@@ -15,13 +7,13 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 import numpy as np
 
-from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import classification_report
-from NiftyIO import readNifty
+from sklearn.metrics import accuracy_score, classification_report
 
 # Create a transformation for processing the image
+from public.NiftyIO import readNifty
+
 transform = transforms.Compose([
     transforms.ToPILImage(),  # Convertir el tensor a una imagen PIL
     transforms.Resize((53, 64)),  # Redimensionar la imagen a 224x224 píxeles
@@ -106,20 +98,27 @@ for i in range(min(500, len(image_paths))):
 # Stack features vertically
 all_features = np.vstack(all_features)
 
-print("-------------------------------SVM-----------------------------------")
+print('---------------------------------------KNN-------------------------------------------')
 
-# # DATA SPLITTING
-X_train, X_test, y_train, y_test = train_test_split(all_features, y, test_size=0.3, random_state=42)
+# 1.slice train_data and test_data
+X_train, X_test, y_train, y_test = train_test_split(all_features, y, test_size=0.2, random_state=42)
 
-# Create and training a Radiomics classifier
-clf2 = svm.SVC(probability=True, class_weight='balanced')
-clf2.fit(X_train, y_train)
+# 2.create KNN model
+knn = KNeighborsClassifier(n_neighbors=3)  # 选择合适的k值
 
-y_pred_uncalib = clf2.predict(X_test)
+# 3.train model
+knn.fit(X_train, y_train)
 
-train_report_dict = classification_report(
+# 4.predict
+y_pred = knn.predict(X_test)
+
+# 5.evaluate model
+accuracy = accuracy_score(y_test, y_pred)
+
+# 6.get prediction report
+report = classification_report(
     y_test,
-    y_pred_uncalib,
+    y_pred,
     labels=[0, 1],
     target_names=['benign', 'malign'],
     sample_weight=None,
@@ -128,28 +127,5 @@ train_report_dict = classification_report(
     zero_division=0
 )
 
-print(train_report_dict)
-
-# Show the probabilities of the prediction
-# print(clf2.predict_proba(X_test))
-
-
-# Use the probabilities to calibrate a new model
-calibrated_classifier = CalibratedClassifierCV(clf2, n_jobs=-1)
-calibrated_classifier.fit(X_train, y_train)
-
-y_pred_calib = calibrated_classifier.predict(X_test)
-
-train_report_dict = classification_report(
-    y_test,
-    y_pred_calib,
-    labels=[0, 1],
-    target_names=['benign', 'malign'],
-    sample_weight=None,
-    digits=3,
-    output_dict=False,
-    zero_division=0
-)
-
-print(train_report_dict)
-
+print(report)
+print(f"Accuracy: {accuracy}")
