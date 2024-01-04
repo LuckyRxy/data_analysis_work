@@ -12,11 +12,13 @@ __year__ = "2023"
 
 import os
 import matplotlib
+
+from public.SegmentationQualityScores import VOE, DICE, RelVolDiff
+
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from validation.SegmentationQualityScores import VOE, DICE, RelVolDiff, DistScores
 from scipy.ndimage import distance_transform_edt as bwdist
 from skimage.measure import find_contours as contour
 from skimage.filters import threshold_otsu

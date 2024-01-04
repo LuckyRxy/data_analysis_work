@@ -277,7 +277,6 @@ plt.show()
 # EX6: Try to divide the plane with a line splitting (discriminating)
 #      the red (lesion) and blue points (background)
 
-
 plt.figure()
 plt.plot(im.flatten(), Lap.flatten(), '.')
 plt.plot(im[np.nonzero(imMask)], Lap[np.nonzero(imMask)], 'r.', label='Lesion Values')
@@ -286,23 +285,3 @@ plt.ylabel('Laplacian')
 plt.title('Pixel Distribution in the Space of Values given by (Intensity,Laplacian).')
 plt.legend()
 print("!!!!!")
-
-### 4.3 Kmeans Clustering
-# EX7: Run k-means with and without normalization of the feature space
-
-# Lap = (Lap - Lap.min()) / (Lap.max() - Lap.min())
-# X = np.array((im.flatten(), Lap.flatten()))
-# kmeans = KMeans(n_clusters=2)
-# kmeans = kmeans.fit(X.transpose())
-# labels = kmeans.predict(X.transpose())
-#
-# plt.figure()
-# plt.plot(im.flatten(), Lap.flatten(), '.')
-# plt.plot(im[np.nonzero(imMask)], Lap[np.nonzero(imMask)], 'r.', label='Lesion Values')
-# plt.xlabel('Intensity')
-# plt.ylabel('Laplacian')
-# plt.title('Pixel Distribution in the Space of Values given by (Intensity,Laplacian).')
-# x = X[0, np.nonzero(labels == 1)]
-# y = X[1, np.nonzero(labels == 1)]
-# plt.plot(x.flatten(), y.flatten(), 'k.', label='k-means Clustering')
-# plt.legend()
