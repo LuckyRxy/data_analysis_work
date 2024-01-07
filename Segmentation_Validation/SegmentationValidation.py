@@ -13,7 +13,7 @@ __year__ = "2023"
 import os
 import matplotlib
 
-from public.SegmentationQualityScores import VOE, DICE, RelVolDiff
+from public.SegmentationQualityScores import VOE, DICE, RelVolDiff, DistScores
 
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
@@ -43,12 +43,10 @@ niiROI,niimetada=readNifty(NiiFile)
 ### 1. PRE-PROCESSING
 # 1.1 Gaussian Filtering
 sig=1
-# niiROIGauss = gfilt.gaussian_filter(niiROI, sigma=sig)
 niiROIGauss = gfilt(niiROI, sigma=sig)
 # 1.2 MedFilter
 sze=3
-# niiROIMed = mfilt.median_filter(niiROI, sze)
-niiROIMed = mfilt(niiROI, sze)
+niiROIMed = mfilt(niiROI, size=sze)
 
 VolumeCutBrowser(niiROIGauss)
 
@@ -77,24 +75,24 @@ szeCl=3
 se=Morpho.cube(szeCl)
 niiROISegClose = Morpho.binary_closing(niiROISeg, se)
 
-VolumeCutBrowser(niiROISegOpen)
+VolumeCutBrowser(niiROISegClose)
 
 #  Volumetric Measures
 print('---------------------------------Validation----------------------------------------')
 SegVOE = VOE(niiROISegOpen, niiROISeg)
 SegDICE = DICE(niiROISegOpen, niiROISeg)
-SegRelDiff = RelVolDiff(niiROISegOpen, niiROISeg)
+# SegRelDiff = RelVolDiff(niiROISegOpen, niiROISeg)
 
 k = int(niiROIGauss.shape[2] / 2)  # Cut at the middle of the volume. Change k to get other cuts
 SA = niiROIGauss[:, :, k]
-SAGT = niiROISegOpen[:, :, k]
-SASeg = niiROISeg[:, :, k]
+SAGT = niiROISeg[:, :, k]
+SASeg = niiROISegOpen[:, :, k]
 
 SegVOE_SA = VOE(SASeg, SAGT)
 SegDICE_SA = DICE(SASeg, SAGT)
-SegRelDiff_SA = RelVolDiff(SASeg, niiROISeg)
-print(f"SegVOE:{SegVOE}\nSegDICE:{SegDICE}\nSegRelDiff:{SegRelDiff}")
-print(f"SegVOE_SA:{SegVOE_SA}\nSegDICE_SA:{SegDICE_SA}\nSegRelDiff_SA:{SegRelDiff_SA}")
+# SegRelDiff_SA = RelVolDiff(SASeg, niiROISeg)
+print(f"SegVOE:{SegVOE}\nSegDICE:{SegDICE}\n")
+print(f"SegVOE_SA:{SegVOE_SA}\nSegDICE_SA:{SegDICE_SA}\n")
 
 
 # Distance Measures
@@ -114,7 +112,7 @@ j = BorderGT[0][:, 1].astype(int)
 fig = plt.figure()
 plt.hist(DistSeg[i, j], bins=50, edgecolor='k')
 plt.title('Distance Measures')
-plt.show()
+# plt.show()
 
 # 3.3.3 Distance Scores
 AvgDist, MxDist = DistScores(SASeg, SAGT)

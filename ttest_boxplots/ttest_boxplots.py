@@ -24,14 +24,14 @@ from matplotlib import pyplot as plt
 
 def BoxPlotFeatures(X, y, feature_names, output_dir):
     # enumerate()：同时获取索引和元素
-    print("X:", X)
-    print("y:", y)
-    print("feature_names:", feature_names)
+    # print("X:", X)
+    # print("y:", y)
+    # print("feature_names:", feature_names)
     for c, fn in enumerate(feature_names):
         idx_Malignant = np.nonzero(y == 'Malignant')[0]
         idx_Benign = np.nonzero(y == 'Benign')[0]
         group = [X[idx_Malignant, c], X[idx_Benign, c]]
-        print("group:", group)
+        # print("group:", group)
         plt.figure()
         plt.boxplot(group, labels=['Malignant', 'Benign'])
         plt.title(str(c) + ' ' + fn)

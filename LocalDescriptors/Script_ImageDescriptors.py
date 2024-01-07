@@ -154,6 +154,7 @@ print(f"Lap:{Lap.shape}")
 fig1 = plt.figure()
 ax = fig1.add_subplot(141)
 ax.imshow(img, cmap='gray')
+ax.set_title('original')
 ax = fig1.add_subplot(142)
 ax.imshow(sxx, cmap='gray')
 ax.set_title('vertical ridges/valleys')
@@ -167,6 +168,7 @@ ax.set_title('Laplacian')
 fig1 = plt.figure()
 ax = fig1.add_subplot(131)
 ax.imshow(img, cmap='gray')
+ax.set_title('original')
 ax = fig1.add_subplot(132)
 ax.imshow(abs(Lap) * (Lap > 0), cmap='gray')
 ax.set_title('valleys (Positive Laplacian)')
@@ -210,11 +212,11 @@ NFilt = (
     else np.shape(GaborBank2D_1)[0]
 )
 
-# mlab.figure()
-# # gabor_filter_index_for_3d_vis = 1
-# mlab.surf(GaborBank2D_1[1], warp_scale="auto")
-# mlab.title("3D Gabor Filter (Real Part)")
-# mlab.show()  # cannot make this non-block. calling it optionally.
+mlab.figure()
+# gabor_filter_index_for_3d_vis = 1
+mlab.surf(GaborBank2D_1[1], warp_scale="auto")
+mlab.title("3D Gabor Filter (Real Part)")
+mlab.show()  # cannot make this non-block. calling it optionally.
 
 
 Ressze = np.concatenate((im.shape, np.array([NFilt])))

@@ -149,7 +149,7 @@ params = 'config/Params.yaml'
 # Initializing the feature extractor
 extractor = featureextractor.RadiomicsFeatureExtractor(params)
 
-existing_file_path = r"./features.xlsx"
+existing_file_path = r"radiomics_features.xlsx"
 existing_data = pd.read_excel(existing_file_path)
 
 # Reading image and mask
@@ -157,13 +157,13 @@ df_mv = pd.read_excel(r'D:\Project\PythonProject\data_analysis\resources\Metadat
                           sheet_name='ML4PM_MetadatabyNoduleMaxVoting',
                           engine='openpyxl'
                           )
-for i in range(10):
+for i in range(1000):
     patient_id = re.search(r'([A-Z0-9-]+)_R_\d+', imageNames[i]).group(1)
     nodule_id = int(re.search(r'R_(\d+)', imageNames[i]).group(1))
-    print(f'patient_id:{patient_id}',f'nodule_id:{nodule_id}')
+    # print(f'patient_id:{patient_id}',f'nodule_id:{nodule_id}')
 
-    diagnosis = df_mv[(df_mv.patient_id == patient_id) & (df_mv.nodule_id == nodule_id)].Diagnosis_value.values[0]
-    print(f'diagnosis:{diagnosis}')
+    diagnosis = df_mv[(df_mv.patient_id == patient_id)
+                      & (df_mv.nodule_id == nodule_id)].Diagnosis_value.values[0]
 
     image, meta1 = readNifty(os.path.join(db_path, imageDirectory, imageNames[i]), CoordinateOrder='xyz')
     mask, meta2 = readNifty(os.path.join(db_path, maskDirectory, maskNames[i]), CoordinateOrder='xyz')
@@ -173,7 +173,6 @@ for i in range(10):
     image = SetGrayLevel(image, levels=24)
     # Extract features slice by slice.
     df = SliceMode(patient_id, nodule_id, diagnosis, image, mask, meta1, meta2, extractor, maskMinPixels=200)
-    print(f"df:{df}")
 
     append_data_to_excel(existing_file_path, df)
 

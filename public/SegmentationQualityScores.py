@@ -88,8 +88,8 @@ def DistScores(Seg, GT):
     # i=index[0];j=index[1];k=index[2]
     # idxs=np.ravel_multi_index((i,j,k),Seg.shape)
 
-    BorderSeg = ((DistSegInt < 1) + (DistSegInt > 1)) == 0;
-    BorderGT = ((DistGTInt < 1) + (DistGTInt > 1)) == 0;
+    BorderSeg = ((DistSegInt < 1) + (DistSegInt > 1)) == 0
+    BorderGT = ((DistGTInt < 1) + (DistGTInt > 1)) == 0
 
     DistAll = np.concatenate((DistSeg[BorderGT], DistGT[BorderSeg]), axis=0)
 
