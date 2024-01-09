@@ -11,6 +11,8 @@ __year__ = "2023"
 """
 
 import os
+
+import cv2
 import matplotlib
 
 from public.SegmentationQualityScores import VOE, DICE, RelVolDiff, DistScores
@@ -36,7 +38,7 @@ CaseFolder='VOIs'
 NiiFile='LIDC-IDRI-0001_R_1.nii.gz'
 
 NiiFile=os.path.join(SessionDataFolder,CaseFolder,'image',NiiFile)
-niiROI,niimetada=readNifty(NiiFile)
+niiROI,_=readNifty(NiiFile)
 
 ######## SEGMENTATION PIPELINE
 
@@ -49,6 +51,35 @@ sze=3
 niiROIMed = mfilt(niiROI, size=sze)
 
 VolumeCutBrowser(niiROIGauss)
+
+# # Gabor Filter
+# # Define Gabor filter parameters
+# ksize = 9
+# theta = [0, np.pi/4, np.pi/2, 3*np.pi/4]  # angles in different directions
+# lambd = [5, 10, 15]  # different wavelengths
+# sigma = 2.0
+# gamma = 0.5
+#
+# # Apply multiple Gabor filters and merge the results
+# gabor_responses = []
+# for t in theta:
+#     for l in lambd:
+#         gabor_kernel = cv2.getGaborKernel((ksize, ksize), sigma, t, l, gamma)
+#         gabor_response = cv2.filter2D(niiROI, cv2.CV_64F, gabor_kernel)
+#         gabor_responses.append(gabor_response)
+#
+# # Combine responses from multiple directions and wavelengths
+# gabor_niiROI = np.sum(gabor_responses, axis=0)
+#
+# VolumeCutBrowser(gabor_niiROI)
+
+
+# # Laplacian
+# laplacian_filtered = cv2.Laplacian(niiROIGauss, cv2.CV_64F)
+# min_val = np.min(laplacian_filtered)
+# max_val = np.max(laplacian_filtered)
+# laplacian_filtered = np.uint8(255 * (laplacian_filtered - min_val) / (max_val - min_val))
+# VolumeCutBrowser(laplacian_filtered)
 
 ### 2. BINARIZATION (TH is Threshold)
 Th = threshold_otsu(niiROIGauss)
